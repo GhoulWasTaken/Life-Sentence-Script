@@ -1,0 +1,97 @@
+-- Life Sentence Script
+local LocalPlayer = game.Players.LocalPlayer
+local Players = game:GetService("Players")
+local AV = require(game:GetService("ReplicatedStorage").GunConfigs)
+
+AdminKick = true -- kicks when an admin joins
+
+AV["Glock"].CoolDown = 0.01
+AV["Glock"].IsAutomatic = true
+AV["Glock"].ClipPrice = 20
+
+AV["Assault Rifle"].CoolDown = 0.01
+
+local adminList = {
+    "5y6x",
+    "Ebonkin",
+    "AP600",
+    "KlaKoon",
+    "TravelingScript",
+    "WlNTER_E",
+    "Academia202",
+    "TRlP_E",
+    "EliteAshleyrow69",
+    "ItsRainingPizza",
+    "Sinister_Guesty",
+    "ledgerbart", 
+    "AwesomegamerPC",
+    "NorthEtunic"
+    }
+
+spawn(function()
+    while wait(0.5) do
+        for i,v in pairs(workspace.Robbable:GetChildren()) do
+        if v.Name == "Safe" or "Register" then
+            --print("1")
+            --if v.Door.Rotation == Vector3.new(0, 45, 0) then
+                --print("2")
+                fireproximityprompt(v.Door.Attachment.ProximityPrompt, 1000)
+                fireproximityprompt(v.Door.Attachment.ProximityPrompt, 1000)
+            end
+        end
+    end
+end)
+
+spawn(function()
+   while wait(0.5) do
+       for i,v in pairs(workspace.LootSpawns:GetChildren()) do
+           fireproximityprompt(v.Part.Attachment.ProximityPrompt, 1000)
+       end
+   end
+end)
+
+spawn(function()
+    while wait(0.1) do
+        for i,v in pairs(workspace:GetChildren()) do
+            if v.Name == "DroppedCash" then
+                fireproximityprompt(v.ProximityPrompt, 1000)
+            end
+        end
+    end
+end)
+
+spawn(function()
+    while wait(0.1) do
+        if LocalPlayer.Backpack.Local:FindFirstChild("Dead") then
+            game:GetService("Players").LocalPlayer.Backpack.Local.Dead:Destroy()
+        end
+        
+        if LocalPlayer.Backpack.Stats.Downed == true then
+            LocalPlayer.Backpack.Stats.Downed = false
+        end
+        
+        for i,v in pairs(LocalPlayer.Character:GetChildren()) do
+           if v.ClassName == "Tool" then
+              if LocalPlayer.PlayerGui.HUD.Ammo.ReserveAmmo.Text == "0" then
+                print("No ammo left in reserve.")
+                  
+                local args = {
+                [1] = "BuyAmmo",
+                [2] = v.Name
+                }
+
+                game:GetService("ReplicatedStorage").Events.GunEvent:FireServer(unpack(args))
+
+              end
+           end
+        end
+    end
+end)
+
+Players.PlayerAdded:Connect(function(player)
+    for i,v in pairs(adminList) do
+        if player.Name == v and AdminKick then
+            LocalPlayer:Kick(player.name.."has joined and you are probably gonna get banned.")
+        end
+    end
+end)
