@@ -9,6 +9,7 @@ Mods guns
 Auto pick up items and money
 Auto buy ammo
 Auto reload (because the game doesn't have it)
+Remove the jump cooldown
 
 ]]
 
@@ -21,7 +22,7 @@ local AV = require(game:GetService("ReplicatedStorage").GunConfigs)
 
 AdminKick = true -- kicks when an admin joins
 AutoRob = true
-PickUpDroppedItems = true
+PickUpDroppedItems = false
 
 AV["Glock"].CoolDown = 0.01
 AV["Glock"].IsAutomatic = true
@@ -83,7 +84,7 @@ spawn(function()
        if not PickUpDroppedItems then break end
        if PickUpDroppedItems then
           for i,v in pairs(workspace:GetChildren()) do
-              if v.Name == "Model" and v:FindFirstChild("ProximityPrompt") and v:FindFirstChild("MainPart").Take  then
+              if v.Name == "Model" and v:FindFirstChild("ProximityPrompt") and v:FindFirstChild("MainPart").Take and PickUpDroppedItems  then
                  fireproximityprompt(v.ProximityPrompt, 1000) 
               end
           end
@@ -102,6 +103,10 @@ spawn(function()
         
         if LocalPlayer.Backpack.Stats.Downed == true then
             LocalPlayer.Backpack.Stats.Downed = false
+        end
+        
+        if LocalPlayer.Character.Humanoid.JumpPower == 0 then
+            LocalPlayer.Character.Humanoid.JumpPower = 50
         end
         
         for i,v in pairs(LocalPlayer.Character:GetChildren()) do
