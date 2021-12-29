@@ -4,10 +4,11 @@ local Players = game:GetService("Players")
 local AV = require(game:GetService("ReplicatedStorage").GunConfigs)
 
 AdminKick = true -- kicks when an admin joins
+AutoRob = true
+PickUpDroppedItems = true
 
 AV["Glock"].CoolDown = 0.01
 AV["Glock"].IsAutomatic = true
-AV["Glock"].ClipPrice = 20
 
 AV["Assault Rifle"].CoolDown = 0.01
 
@@ -62,6 +63,21 @@ end)
 
 spawn(function()
     while wait(0.1) do
+       if PickUpDroppedItems then
+          for i,v in pairs(workspace:GetChildren()) do
+              if v.Name == "Model" and v:FindFirstChild("ProximityPrompt") and v:FindFirstChild("MainPart").Take then
+                 fireproximityprompt(v.ProximityPrompt, 1000) 
+              end
+          end
+          
+        else
+            break
+       end
+    end
+end)
+
+spawn(function()
+    while wait(0.1) do
         if LocalPlayer.Backpack.Local:FindFirstChild("Dead") then
             game:GetService("Players").LocalPlayer.Backpack.Local.Dead:Destroy()
         end
@@ -95,3 +111,18 @@ Players.PlayerAdded:Connect(function(player)
         end
     end
 end)
+    
+--[[
+spawn(function()
+    Players.PlayerAdded:Connect(function(player)
+        player.Chatted:Connect(function(msg)
+            --if string.find(msg, "/view") then
+                --local args = string.split(msg, " ")
+                    for i,v in pairs(game:GetService("ReplicatedStorage").PlayerStats[msg].LockerFolder:GetChildren()) do
+                        print(v.ToolName.Value)
+                    end
+                end)
+            end)
+        end)
+    end)
+    ]]
