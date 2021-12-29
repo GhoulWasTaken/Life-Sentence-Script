@@ -46,8 +46,8 @@ local adminList = {
     }
 
 spawn(function()
-    if not AutoRob then break end
     while wait(0.5) do
+        if not AutoRob then break end
         for i,v in pairs(workspace.Robbable:GetChildren()) do
         if v.Name == "Safe" or "Register" then
             --print("1")
@@ -79,8 +79,8 @@ spawn(function()
 end)
 
 spawn(function()
-    if not PickUpDroppedItems then break end
     while wait(0.1) do
+       if not PickUpDroppedItems then break end
        if PickUpDroppedItems then
           for i,v in pairs(workspace:GetChildren()) do
               if v.Name == "Model" and v:FindFirstChild("ProximityPrompt") and v:FindFirstChild("MainPart").Take  then
