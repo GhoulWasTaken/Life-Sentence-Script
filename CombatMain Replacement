@@ -1,0 +1,655 @@
+-- Decompiled with the Synapse X Luau decompiler.
+
+local l__LocalPlayer__1 = game.Players.LocalPlayer;
+local v2 = workspace:WaitForChild(l__LocalPlayer__1.Name);
+local l__GunEvent__3 = game.ReplicatedStorage.Events:WaitForChild("GunEvent");
+local l__Animations__4 = game.ReplicatedStorage:WaitForChild("Animations");
+local l__Humanoid__5 = v2:WaitForChild("Humanoid");
+local l__Animator__6 = l__Humanoid__5:WaitForChild("Animator");
+local v7 = require(game.ReplicatedStorage:WaitForChild("GunConfigs"));
+local l__Downed__8 = l__LocalPlayer__1:WaitForChild("Backpack"):WaitForChild("Stats"):WaitForChild("Downed");
+local l__UsingBool__9 = l__LocalPlayer__1:WaitForChild("Backpack"):WaitForChild("Stats"):WaitForChild("UsingBool");
+local l__Dragging__10 = l__LocalPlayer__1:WaitForChild("Backpack"):WaitForChild("Stats"):WaitForChild("Dragging");
+local l__mouse__11 = l__LocalPlayer__1:GetMouse();
+local l__HUD__12 = l__LocalPlayer__1:WaitForChild("PlayerGui"):WaitForChild("HUD");
+local v13 = game.ReplicatedStorage.PlayerStats:WaitForChild(l__LocalPlayer__1.Name);
+local l__Bar__14 = l__HUD__12:WaitForChild("Health"):WaitForChild("Bar");
+local l__Bar__15 = l__HUD__12:WaitForChild("Stamina"):WaitForChild("Bar");
+l__mouse__11.TargetFilter = workspace:WaitForChild("Bullets");
+l__Humanoid__5:SetStateEnabled(Enum.HumanoidStateType.Dead, false);
+local l__UserInputService__16 = game:GetService("UserInputService");
+local l__GuiService__17 = game:GetService("GuiService");
+local l__CellClose__18 = workspace:WaitForChild("Bullets"):WaitForChild("CellClose");
+local l__StarterGui__1 = game:GetService("StarterGui");
+function SolitaryBackpack()
+	if v13:WaitForChild("SolitaryTime").Value <= 0 then
+		if l__LocalPlayer__1.PlayerGui:FindFirstChild("Intro") then
+			return;
+		else
+			l__HUD__12.Enabled = true;
+			l__StarterGui__1:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true);
+			return;
+		end;
+	end;
+	if 0 < v13:WaitForChild("SolitaryTime").Value then
+		l__HUD__12.Enabled = false;
+		l__StarterGui__1:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false);
+	end;
+end;
+SolitaryBackpack();
+local v19 = l__Animator__6:LoadAnimation(l__Animations__4:WaitForChild("Run"));
+local v20 = l__Animator__6:LoadAnimation(l__Animations__4:WaitForChild("CrouchAnim"));
+local v21 = l__Animator__6:LoadAnimation(l__Animations__4:WaitForChild("StunLeft"));
+local v22 = l__Animator__6:LoadAnimation(l__Animations__4:WaitForChild("StunRight"));
+local v23 = l__Animator__6:LoadAnimation(l__Animations__4:WaitForChild("StunMiddle"));
+local v24 = l__Animator__6:LoadAnimation(l__Animations__4:WaitForChild("Dragging"));
+local u2 = false;
+local u3 = nil;
+function UpdateAmmo()
+	if u2 == false then
+		return;
+	end;
+	l__LocalPlayer__1.PlayerGui.HUD.Ammo.ClipAmmo.Text = u3.Clip.Value;
+	l__LocalPlayer__1.PlayerGui.HUD.Ammo.ReserveAmmo.Text = u3.Reserve.Value;
+end;
+local u4 = nil;
+local u5 = nil;
+local u6 = nil;
+local u7 = false;
+v2.ChildAdded:Connect(function(p1)
+	if not p1:FindFirstChild("Muzzle") then
+		return;
+	end;
+	l__HUD__12.Crosshair.Visible = true;
+	l__HUD__12.MobileFrame.FireButton.Visible = true;
+	l__HUD__12.MobileFrame.ReloadButton.Visible = true;
+	l__HUD__12.MobileFrame.MoveCrossButton.Visible = true;
+	u2 = true;
+	l__LocalPlayer__1.PlayerGui.HUD.Ammo.Visible = true;
+	u4 = l__Animator__6:LoadAnimation(l__Animations__4:FindFirstChild(p1.AnimFolder.Value).Fire);
+	u5 = l__Animator__6:LoadAnimation(l__Animations__4:FindFirstChild(p1.AnimFolder.Value).Idle);
+	u6 = l__Animator__6:LoadAnimation(l__Animations__4:FindFirstChild(p1.AnimFolder.Value).Reload);
+	u7 = v7[p1.Name].IsAutomatic;
+	u3 = p1;
+	u5:Play();
+	UpdateAmmo();
+end);
+local u8 = false;
+v2.ChildRemoved:Connect(function(p2)
+	if not p2:FindFirstChild("Muzzle") then
+		return;
+	end;
+	l__HUD__12.Crosshair.Visible = false;
+	u2 = false;
+	l__HUD__12.MobileFrame.MoveCrossButton.Visible = false;
+	l__HUD__12.MobileFrame.FireButton.Visible = false;
+	l__HUD__12.MobileFrame.ReloadButton.Visible = false;
+	l__LocalPlayer__1.PlayerGui.HUD.Ammo.Visible = false;
+	u5:Stop();
+	u4 = nil;
+	u5 = nil;
+	u3 = nil;
+	u6 = nil;
+	u8 = false;
+end);
+local l__CurrentCamera__9 = workspace.CurrentCamera;
+function ShootBullet()
+	local v25 = nil;
+	if v13.Mobile.Value == false then
+		l__GunEvent__3:FireServer("Fire", l__mouse__11.Hit.p);
+		return;
+	end;
+	if v13.Mobile.Value == true then
+		local v26 = l__CurrentCamera__9:ScreenPointToRay(l__HUD__12.Crosshair.Main.Center.AbsolutePosition.X, l__HUD__12.Crosshair.Main.Center.AbsolutePosition.Y);
+		v25 = (v26.Origin + v26.Direction - l__CurrentCamera__9.CFrame.p).Unit * 5000;
+		local v27 = RaycastParams.new();
+		v27.FilterType = Enum.RaycastFilterType.Blacklist;
+		v27.IgnoreWater = true;
+		v27.FilterDescendantsInstances = { l__LocalPlayer__1.Character, workspace.Bullets };
+		local v28 = workspace:Raycast(l__CurrentCamera__9.CFrame.p, v25, v27);
+		if v28 == nil then
+
+		else
+			l__GunEvent__3:FireServer("Fire", v28.Position);
+			return;
+		end;
+	else
+		return;
+	end;
+	l__GunEvent__3:FireServer("Fire", v25.p);
+end;
+function GunFire()
+	while true do
+		ShootBullet();
+		wait();
+		if u3.Clip.Value == 0 then
+			return;
+		end;
+		if u7 == false then
+			return;
+		end;
+		if u8 == false then
+			return;
+		end;
+		if u2 == false then
+			return;
+		end;
+		if u3 ~= u3 then
+			break;
+		end;	
+	end;
+end;
+l__mouse__11.Button1Down:Connect(function()
+	if v13.Mobile.Value == true then
+		return;
+	end;
+	if u2 == false then
+		return;
+	end;
+	u8 = true;
+	GunFire();
+end);
+l__mouse__11.Button1Up:Connect(function()
+	u8 = false;
+end);
+l__UserInputService__16.InputBegan:connect(function(p3, p4)
+	if not p4 then
+		if u2 == false then
+			return;
+		end;
+		if p3.keyCode == Enum.KeyCode.R then
+			if l__LocalPlayer__1.Backpack.Stats.CanReload.Value == false then
+				return;
+			end;
+			if u3.Clip.Value == v7[u3.Name].ClipSize then
+				return;
+			end;
+			if u3.Reserve.Value == 0 then
+				return;
+			end;
+			l__GunEvent__3:FireServer("Reload");
+		end;
+	end;
+end);
+local u10 = game:GetService("TweenService"):Create(l__Bar__14, TweenInfo.new(1), {
+	Size = UDim2.new(game.Players.LocalPlayer.Character.Humanoid.Health / game.Players.LocalPlayer.Character.Humanoid.MaxHealth, 0, 1, 0)
+});
+function TweenHealthBar()
+	if l__LocalPlayer__1.Backpack.Stats.Dead.Value == true then
+		return;
+	end;
+	u10:Pause();
+	u10 = game:GetService("TweenService"):Create(l__Bar__14, TweenInfo.new(1), {
+		Size = UDim2.new(game.Players.LocalPlayer.Character.Humanoid.Health / game.Players.LocalPlayer.Character.Humanoid.MaxHealth, 0, 1, 0)
+	});
+	u10:Play();
+end;
+local u11 = l__Humanoid__5.Health;
+local u12 = 1;
+l__Humanoid__5.HealthChanged:Connect(function()
+	TweenHealthBar();
+	if l__Downed__8.Value == true then
+		u11 = l__Humanoid__5.Health;
+		return;
+	end;
+	if u11 <= l__Humanoid__5.Health then
+		u11 = l__Humanoid__5.Health;
+		return;
+	end;
+	if l__Humanoid__5.Health < u11 then
+		u11 = l__Humanoid__5.Health;
+		if u12 == 1 then
+			v21:Play();
+			u12 = 2;
+			return;
+		end;
+		if u12 ~= 2 then
+			if u12 == 3 then
+				v23:Play();
+				u12 = 1;
+			end;
+			return;
+		end;
+	else
+		return;
+	end;
+	v22:Play();
+	u12 = 3;
+end);
+l__Downed__8.Changed:Connect(function()
+	if l__Downed__8.Value == true then
+		l__StarterGui__1:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false);
+		l__Humanoid__5.PlatformStand = true;
+		return;
+	end;
+	if l__Downed__8.Value == false then
+		l__StarterGui__1:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true);
+		l__Humanoid__5.PlatformStand = false;
+	end;
+end);
+l__UsingBool__9.Changed:Connect(function()
+	if l__UsingBool__9.Value == true then
+		l__StarterGui__1:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false);
+		return;
+	end;
+	if l__UsingBool__9.Value == false then
+		if l__Downed__8.Value == true then
+			return;
+		end;
+		l__StarterGui__1:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true);
+	end;
+end);
+l__UserInputService__16.InputBegan:Connect(function(p5, p6)
+	if p5.KeyCode == Enum.KeyCode.G then
+		if p6 then
+			return;
+		end;
+		l__GunEvent__3:FireServer("GPress");
+	end;
+end);
+l__UserInputService__16.InputBegan:Connect(function(p7, p8)
+	if p7.KeyCode == Enum.KeyCode.E then
+		if p8 then
+			return;
+		end;
+		l__GunEvent__3:FireServer("EPress");
+	end;
+end);
+local u13 = true;
+local u14 = false;
+l__UserInputService__16.InputBegan:Connect(function(p9, p10)
+	if p9.KeyCode == Enum.KeyCode.LeftShift then
+		if u13 == false then
+			return;
+		end;
+		l__Humanoid__5.WalkSpeed = 24;
+		u14 = true;
+	end;
+end);
+l__UserInputService__16.InputEnded:Connect(function(p11)
+	if p11.KeyCode == Enum.KeyCode.LeftShift then
+		u14 = false;
+		if u13 == false then
+			return;
+		end;
+		l__Humanoid__5.WalkSpeed = 16;
+	end;
+end);
+local u15 = 100;
+function AddStamina()
+	if 100 <= u15 then
+		return;
+	end;
+	u15 = u15 + 0.2;
+end;
+function RegWalkStuff()
+	if u13 == false then
+		return;
+	end;
+	u14 = false;
+	l__Humanoid__5.WalkSpeed = 16;
+	v19:Stop();
+	u15 = 100;
+end;
+local u16 = false;
+l__UserInputService__16.JumpRequest:connect(function()
+	if u16 == true then
+		return;
+	end;
+	if l__LocalPlayer__1.Backpack.Stats.Downed.Value == false then
+		u16 = true;
+		l__Humanoid__5.JumpPower = 50;
+		l__Humanoid__5.Jump = true;
+		wait(0.2);
+		l__Humanoid__5.Jump = false;
+		l__Humanoid__5.JumpPower = 0;
+		wait(0.65);
+		u16 = false;
+		if v13.Mobile.Value ~= true then
+			return;
+		end;
+	else
+		return;
+	end;
+	l__Humanoid__5.JumpPower = 40;
+end);
+game:GetService("RunService").RenderStepped:Connect(function()
+	l__Bar__15.Size = UDim2.new(u15 / 100 * 1.004, 0, 1.002, 0);
+	if l__Downed__8.Value == true then
+		return;
+	end;
+	if u15 <= 0 then
+		RegWalkStuff();
+		return;
+	end;
+	if l__Humanoid__5.WalkSpeed < 19 then
+		v19:Stop();
+		AddStamina();
+		return;
+	end;
+	if l__Humanoid__5.WalkSpeed > 19 then
+		if l__Humanoid__5.MoveDirection.Magnitude ~= 0 then
+			u15 = u15 - 0.3;
+			if v19.IsPlaying == false then
+				v19:Play();
+			end;
+			return;
+		end;
+	else
+		return;
+	end;
+	v19:Stop();
+end);
+l__GunEvent__3.OnClientEvent:Connect(function(p12, p13, p14)
+	if p12 == "FireAndUpdate" then
+		u4:Play();
+		UpdateAmmo();
+		return;
+	end;
+	if p12 == "ErrorSound" then
+		workspace.Sounds.ErrorSound:Play();
+		return;
+	end;
+	if p12 == "CashSound" then
+		workspace.Sounds.CashSound1:Play();
+		return;
+	end;
+	if p12 == "Update" then
+		UpdateAmmo();
+		return;
+	end;
+	if p12 == "ReloadAnim" then
+		u6:Play();
+		return;
+	end;
+	if p12 == "SlowFire" then
+		v19:Stop();
+		u14 = false;
+		u13 = false;
+		l__Humanoid__5.WalkSpeed = 7;
+		wait(0.5);
+		if l__LocalPlayer__1.Backpack.Stats.CanReload.Value == false then
+			return;
+		elseif u13 == true then
+			return;
+		else
+			u14 = false;
+			u13 = true;
+			l__Humanoid__5.WalkSpeed = 16;
+			return;
+		end;
+	end;
+	if p12 == "Slow" then
+		v19:Stop();
+		u14 = false;
+		u13 = false;
+		l__Humanoid__5.WalkSpeed = 7;
+		return;
+	end;
+	if p12 == "Normal" then
+		u14 = false;
+		u13 = true;
+		if l__LocalPlayer__1.Backpack.Stats.CanReload.Value == false then
+			return;
+		else
+			l__Humanoid__5.WalkSpeed = 16;
+			return;
+		end;
+	end;
+	if p12 == "ForcedWalk" then
+		u14 = false;
+		u13 = false;
+		if l__LocalPlayer__1.Backpack.Stats.CanReload.Value == false then
+			return;
+		else
+			l__Humanoid__5.WalkSpeed = 16;
+			return;
+		end;
+	end;
+	if p12 == "Stomping" then
+		v19:Stop();
+		u14 = false;
+		u13 = false;
+		l__Humanoid__5.WalkSpeed = 0;
+		wait(1);
+		if l__LocalPlayer__1.Backpack.Stats.CanReload.Value == false then
+			return;
+		elseif u13 == true then
+			return;
+		else
+			u14 = false;
+			u13 = true;
+			l__Humanoid__5.WalkSpeed = 16;
+			return;
+		end;
+	end;
+	if p12 == "SlowForCertainTime" then
+		v19:Stop();
+		u14 = false;
+		u13 = false;
+		l__Humanoid__5.WalkSpeed = p14;
+		wait(p13);
+		if l__LocalPlayer__1.Backpack.Stats.CanReload.Value == false then
+			return;
+		elseif u13 == true then
+			return;
+		else
+			u14 = false;
+			u13 = true;
+			l__Humanoid__5.WalkSpeed = 16;
+			return;
+		end;
+	end;
+	if p12 == "SolCell" then
+		p13.MainDoor.PrimaryPart.CFrame = p13.Orgin.CFrame;
+		v13.SolitaryTime.Changed:Connect(function()
+			if l__Downed__8.Value == true then
+				return;
+			end;
+			workspace.Sounds.TimeTick:Play();
+			l__HUD__12.Parent.Solitary.Enabled = true;
+			l__HUD__12.Parent.Solitary.TimeLabel.Text = "OUT IN " .. v13.SolitaryTime.Value .. "..";
+			if v13.SolitaryTime.Value == 0 then
+				wait(1);
+				l__HUD__12.Enabled = true;
+				l__StarterGui__1:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true);
+				l__HUD__12.Parent.Solitary.Enabled = false;
+				OpenCell(p13);
+			end;
+		end);
+		return;
+	end;
+	if p12 == "CashSound2" then
+		workspace.Sounds.CashSound2:Play();
+		return;
+	end;
+	if p12 ~= "CopFrame" then
+		return;
+	end;
+	if l__HUD__12.CopFrame.Visible == true then
+		return;
+	end;
+	l__HUD__12.CopFrame.Visible = true;
+	l__HUD__12.CopFrame.CopAmountFrame.CopAmountMessage.Text = game.ReplicatedStorage.CopAmount.Value .. "/6";
+	workspace.Sounds.ComputerSound:Play();
+	if v13.Cop.Value == true then
+		l__HUD__12.CopFrame.LeaveCopFrame.Visible = true;
+		l__HUD__12.CopFrame.JoinCopFrame.Visible = false;
+	elseif v13.Cop.Value == false then
+		l__HUD__12.CopFrame.LeaveCopFrame.Visible = false;
+		l__HUD__12.CopFrame.JoinCopFrame.Visible = true;
+	end;
+	while true do
+		wait(0.5);
+		if l__HUD__12.CopFrame.Visible == false then
+			return;
+		end;
+		if l__LocalPlayer__1.Backpack.Stats.Downed.Value == true then
+			l__HUD__12.CopFrame.Visible = false;
+			return;
+		end;
+		if (p13.Position - l__LocalPlayer__1.Character.Torso.Position).magnitude > 13 then
+			break;
+		end;	
+	end;
+	l__HUD__12.CopFrame.Visible = false;
+	workspace.Sounds.ComputerSound:Play();
+end);
+function OpenCell(p15)
+	local v29 = game:GetService("TweenService"):Create(p15.MainDoor.PrimaryPart, TweenInfo.new(1), {
+		CFrame = p15.MoveToPart.CFrame
+	});
+	p15.MainDoor.MainPart.Buzzer:Play();
+	p15.AlarmLight.Light.Light.Transparency = 0;
+	p15.AlarmLight.Light.Light.PointLight.Enabled = true;
+	wait(1);
+	p15.MainDoor.MainPart.Sound:Play();
+	v29:Play();
+	wait(2);
+	p15.AlarmLight.Light.Light.Transparency = 0.85;
+	p15.AlarmLight.Light.Light.PointLight.Enabled = false;
+end;
+l__Dragging__10.Changed:Connect(function()
+	if l__Dragging__10.Value == true then
+		v24:Play();
+		l__StarterGui__1:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false);
+		return;
+	end;
+	v24:Stop();
+	if l__Downed__8.Value == true then
+		return;
+	end;
+	l__StarterGui__1:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true);
+end);
+v2:WaitForChild("Head"):WaitForChild("OverHead").Enabled = false;
+l__HUD__12:WaitForChild("MobileFrame"):WaitForChild("StompButton").MouseButton1Down:connect(function()
+	l__GunEvent__3:FireServer("EPress");
+end);
+l__HUD__12:WaitForChild("MobileFrame"):WaitForChild("DragButton").MouseButton1Down:connect(function()
+	l__GunEvent__3:FireServer("GPress");
+end);
+l__HUD__12:WaitForChild("MobileFrame"):WaitForChild("RunButton").MouseButton1Down:connect(function()
+	if u13 == false then
+		return;
+	end;
+	l__Humanoid__5.WalkSpeed = 24;
+	u14 = true;
+end);
+l__HUD__12:WaitForChild("MobileFrame"):WaitForChild("MoveCrossButton").MouseButton1Down:connect(function()
+	if l__HUD__12.Crosshair.Position == UDim2.new(0.5, 0, 0.5, 0) then
+		l__HUD__12.Crosshair.Position = UDim2.new(0.5, 0, 0.3, 0);
+		return;
+	end;
+	if l__HUD__12.Crosshair.Position ~= UDim2.new(0.5, 0, 0.5, 0) then
+		l__HUD__12.Crosshair.Position = UDim2.new(0.5, 0, 0.5, 0);
+	end;
+end);
+l__HUD__12:WaitForChild("MobileFrame"):WaitForChild("RunButton").MouseButton1Up:connect(function()
+	u14 = false;
+	if u13 == false then
+		return;
+	end;
+	l__Humanoid__5.WalkSpeed = 16;
+end);
+l__HUD__12:WaitForChild("MobileFrame"):WaitForChild("ReloadButton").MouseButton1Down:connect(function()
+	if u2 == false then
+		return;
+	end;
+	if l__LocalPlayer__1.Backpack.Stats.CanReload.Value == false then
+		return;
+	end;
+	if u3.Clip.Value == v7[u3.Name].ClipSize then
+		return;
+	end;
+	if u3.Reserve.Value == 0 then
+		return;
+	end;
+	l__GunEvent__3:FireServer("Reload");
+end);
+l__HUD__12:WaitForChild("MobileFrame"):WaitForChild("FireButton").MouseButton1Down:connect(function()
+	if u2 == false then
+		return;
+	end;
+	u8 = true;
+	GunFire();
+end);
+l__HUD__12:WaitForChild("MobileFrame"):WaitForChild("FireButton").MouseButton1Up:connect(function()
+	u8 = false;
+end);
+l__UserInputService__16.InputBegan:Connect(function(p16)
+	if p16.UserInputType == Enum.UserInputType.Gamepad1 and p16.KeyCode == Enum.KeyCode.DPadDown then
+		l__GunEvent__3:FireServer("EPress");
+	end;
+end);
+l__UserInputService__16.InputBegan:Connect(function(p17)
+	if p17.UserInputType == Enum.UserInputType.Gamepad1 and p17.KeyCode == Enum.KeyCode.DPadUp then
+		l__GunEvent__3:FireServer("GPress");
+	end;
+end);
+l__UserInputService__16.InputBegan:Connect(function(p18)
+	if p18.UserInputType == Enum.UserInputType.Gamepad1 and p18.KeyCode == Enum.KeyCode.ButtonL3 then
+		if u13 == false then
+			return;
+		end;
+		l__Humanoid__5.WalkSpeed = 24;
+		u14 = true;
+	end;
+end);
+l__UserInputService__16.InputEnded:Connect(function(p19)
+	if p19.UserInputType == Enum.UserInputType.Gamepad1 and p19.KeyCode == Enum.KeyCode.ButtonL3 then
+		u14 = false;
+		if u13 == false then
+			return;
+		end;
+		l__Humanoid__5.WalkSpeed = 16;
+	end;
+end);
+l__UserInputService__16.InputEnded:Connect(function(p20)
+	if p20.UserInputType == Enum.UserInputType.Gamepad1 and p20.KeyCode == Enum.KeyCode.ButtonX then
+		if u2 == false then
+			return;
+		end;
+		if l__LocalPlayer__1.Backpack.Stats.CanReload.Value == false then
+			return;
+		end;
+		if u3.Clip.Value == v7[u3.Name].ClipSize then
+			return;
+		end;
+		if u3.Reserve.Value == 0 then
+			return;
+		end;
+		l__GunEvent__3:FireServer("Reload");
+	end;
+end);
+l__UserInputService__16.InputBegan:Connect(function(p21, p22)
+	if p21.KeyCode == Enum.KeyCode.Q and not p22 then
+		l__LocalPlayer__1.Backpack.Server.Drop.Drop:FireServer();
+	end;
+end);
+l__HUD__12:WaitForChild("MobileFrame"):WaitForChild("DropButton").MouseButton1Down:connect(function()
+	l__LocalPlayer__1.Backpack.Server.Drop.Drop:FireServer();
+end);
+l__UserInputService__16.InputBegan:Connect(function(p23)
+	if p23.UserInputType == Enum.UserInputType.Gamepad1 and p23.KeyCode == Enum.KeyCode.DPadLeft then
+		l__LocalPlayer__1.Backpack.Server.Drop.Drop:FireServer();
+	end;
+end);
+l__CellClose__18.Touched:Connect(function(p24)
+	if p24.Parent ~= l__LocalPlayer__1.Character and p24.Parent.Parent ~= l__LocalPlayer__1.Character then
+		return;
+	end;
+	for v30, v31 in pairs(workspace.SolitaryCellDoors:GetChildren()) do
+		if v31 and v31:IsA("Model") and v31.MainDoor.PrimaryPart.CFrame ~= v31.Orgin.CFrame and v31.MainDoor.PrimaryPart.CFrame == v31.MoveToPart.CFrame then
+			game:GetService("TweenService"):Create(v31.MainDoor.PrimaryPart, TweenInfo.new(1), {
+				CFrame = v31.Orgin.CFrame
+			}):Play();
+			wait();
+			v31.MainDoor.MainPart.Sound:Play();
+		end;
+	end;
+end);
+if v13.Cop.Value == true then
+	v2:WaitForChild("Head"):WaitForChild("CopOverhead").Enabled = false;
+elseif v13.Cop.Value == false then
+	return;
+end;
