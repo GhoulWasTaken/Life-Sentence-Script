@@ -1,4 +1,20 @@
 -- Spirit X
+
+--[[ FEATURES
+
+Auto rob
+Move when downed
+Kicks you when an admin joins
+Mods guns
+Auto pick up items and money
+Auto buy ammo
+Auto reload (because the game doesn't have it)
+
+]]
+
+
+
+
 local LocalPlayer = game.Players.LocalPlayer
 local Players = game:GetService("Players")
 local AV = require(game:GetService("ReplicatedStorage").GunConfigs)
@@ -98,6 +114,15 @@ spawn(function()
 
                 game:GetService("ReplicatedStorage").Events.GunEvent:FireServer(unpack(args))
 
+              end
+              
+              if LocalPlayer.PlayerGui.HUD.Ammo.ClipAmmo.Text == "0" then
+
+                local args = {
+                [1] = "Reload"
+                }
+
+                game:GetService("ReplicatedStorage").Events.GunEvent:FireServer(unpack(args))
               end
            end
         end
