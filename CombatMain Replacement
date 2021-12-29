@@ -287,7 +287,7 @@ function RegWalkStuff()
 		return;
 	end;
 	u14 = false;
-	l__Humanoid__5.WalkSpeed = 16;
+	l__Humanoid__5.WalkSpeed = 24;
 	v19:Stop();
 	u15 = 100;
 end;
