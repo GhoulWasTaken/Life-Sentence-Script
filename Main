@@ -1,4 +1,4 @@
--- Life Sentence Script
+-- Spirit X
 local LocalPlayer = game.Players.LocalPlayer
 local Players = game:GetService("Players")
 local AV = require(game:GetService("ReplicatedStorage").GunConfigs)
