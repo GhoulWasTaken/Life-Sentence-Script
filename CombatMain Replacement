@@ -33,7 +33,7 @@ function SolitaryBackpack()
 	end;
 	if 0 < v13:WaitForChild("SolitaryTime").Value then
 		l__HUD__12.Enabled = false;
-		l__StarterGui__1:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false);
+		l__StarterGui__1:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true);
 	end;
 end;
 SolitaryBackpack();
@@ -302,7 +302,7 @@ l__UserInputService__16.JumpRequest:connect(function()
 		l__Humanoid__5.Jump = true;
 		wait(0.2);
 		l__Humanoid__5.Jump = false;
-		l__Humanoid__5.JumpPower = 0;
+		l__Humanoid__5.JumpPower = 50;
 		wait(0.65);
 		u16 = false;
 		if v13.Mobile.Value ~= true then
@@ -366,7 +366,7 @@ l__GunEvent__3.OnClientEvent:Connect(function(p12, p13, p14)
 		v19:Stop();
 		u14 = false;
 		u13 = false;
-		l__Humanoid__5.WalkSpeed = 7;
+		l__Humanoid__5.WalkSpeed = 16;
 		wait(0.5);
 		if l__LocalPlayer__1.Backpack.Stats.CanReload.Value == false then
 			return;
@@ -383,7 +383,7 @@ l__GunEvent__3.OnClientEvent:Connect(function(p12, p13, p14)
 		v19:Stop();
 		u14 = false;
 		u13 = false;
-		l__Humanoid__5.WalkSpeed = 7;
+		l__Humanoid__5.WalkSpeed = 16;
 		return;
 	end;
 	if p12 == "Normal" then
@@ -410,7 +410,7 @@ l__GunEvent__3.OnClientEvent:Connect(function(p12, p13, p14)
 		v19:Stop();
 		u14 = false;
 		u13 = false;
-		l__Humanoid__5.WalkSpeed = 0;
+		l__Humanoid__5.WalkSpeed = 16;
 		wait(1);
 		if l__LocalPlayer__1.Backpack.Stats.CanReload.Value == false then
 			return;
