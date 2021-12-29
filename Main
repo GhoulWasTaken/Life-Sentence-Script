@@ -46,6 +46,7 @@ local adminList = {
     }
 
 spawn(function()
+    if not AutoRob then break end
     while wait(0.5) do
         for i,v in pairs(workspace.Robbable:GetChildren()) do
         if v.Name == "Safe" or "Register" then
@@ -78,10 +79,11 @@ spawn(function()
 end)
 
 spawn(function()
+    if not PickUpDroppedItems then break end
     while wait(0.1) do
        if PickUpDroppedItems then
           for i,v in pairs(workspace:GetChildren()) do
-              if v.Name == "Model" and v:FindFirstChild("ProximityPrompt") and v:FindFirstChild("MainPart").Take then
+              if v.Name == "Model" and v:FindFirstChild("ProximityPrompt") and v:FindFirstChild("MainPart").Take  then
                  fireproximityprompt(v.ProximityPrompt, 1000) 
               end
           end
@@ -103,7 +105,7 @@ spawn(function()
         end
         
         for i,v in pairs(LocalPlayer.Character:GetChildren()) do
-           if v.ClassName == "Tool" then
+           if v.ClassName == "Tool" and v:FindFirstChild("Muzzle") then
               if LocalPlayer.PlayerGui.HUD.Ammo.ReserveAmmo.Text == "0" then
                 print("No ammo left in reserve.")
                   
