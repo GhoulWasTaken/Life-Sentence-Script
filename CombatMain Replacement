@@ -275,7 +275,7 @@ l__UserInputService__16.InputEnded:Connect(function(p11)
 		l__Humanoid__5.WalkSpeed = 16;
 	end;
 end);
-local u15 = 100;
+local u15 = 1000000000;
 function AddStamina()
 	if 100 <= u15 then
 		return;
