@@ -288,7 +288,7 @@ function RegWalkStuff()
 	end;
 	u14 = false;
 	l__Humanoid__5.WalkSpeed = 24;
-	v19:Stop();
+	--v19:Stop();
 	u15 = 100;
 end;
 local u16 = false;
@@ -319,7 +319,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		return;
 	end;
 	if u15 <= 0 then
-		RegWalkStuff();
+		--RegWalkStuff();
 		return;
 	end;
 	if l__Humanoid__5.WalkSpeed < 19 then
