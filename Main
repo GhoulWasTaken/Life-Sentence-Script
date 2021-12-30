@@ -10,6 +10,7 @@ Auto pick up items and money
 Auto buy ammo
 Auto reload (because the game doesn't have it)
 Remove the jump cooldown
+If you say someones name in chat it will print what they have in their locker
 
 ]]
 
@@ -155,6 +156,25 @@ Players.PlayerAdded:Connect(function(player)
         end
     end
 end)
+
+spawn(function()
+    while wait(1) do
+        for i,player in pairs(game:GetService("Players"):GetChildren()) do
+            player.Chatted:Connect(function(msg)
+                if game:GetService("Players"):FindFirstChild(msg) then
+                    getLockerItems(msg)
+                    wait(2)
+                end
+            end)
+        end
+    end
+end)
+
+function getLockerItems(msg)
+    for i,v in pairs(game:GetService("ReplicatedStorage").PlayerStats[msg].LockerFolder:GetChildren()) do
+       print(i, v.ToolName.Value) 
+    end
+end
 
 -- NOT MINE --
 
