@@ -15,10 +15,12 @@ Remove the jump cooldown
 
 
 
-
-local LocalPlayer = game.Players.LocalPlayer
 local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local LocalPlayerName = LocalPlayer.Name
 local AV = require(game:GetService("ReplicatedStorage").GunConfigs)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local PlayerStats = ReplicatedStorage.PlayerStats
 
 AdminKick = true -- kicks when an admin joins
 AutoRob = true
@@ -111,6 +113,10 @@ spawn(function()
         
         if LocalPlayer.Character.Humanoid.JumpPower == 0 then
             LocalPlayer.Character.Humanoid.JumpPower = 50
+        end
+        
+        if PlayerStats[LocalPlayerName].SolitaryTime > 0 then
+           PlayerStats[LocalPlayerName].SolitaryTime = 0
         end
         
         for i,v in pairs(LocalPlayer.Character:GetChildren()) do
