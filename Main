@@ -116,9 +116,9 @@ spawn(function()
             LocalPlayer.Character.Humanoid.JumpPower = 50
         end
         
-        if tonumber(PlayerStats[LocalPlayerName].SolitaryTime) > 0 then
-           PlayerStats[LocalPlayerName].SolitaryTime = 0
-        end
+        --if tonumber(PlayerStats[LocalPlayerName].SolitaryTime) > 0 then
+           --PlayerStats[LocalPlayerName].SolitaryTime = 0
+        --end
         
         for i,v in pairs(LocalPlayer.Character:GetChildren()) do
            if v.ClassName == "Tool" and v:FindFirstChild("Muzzle") then
