@@ -32,8 +32,8 @@ AV["Glock"].IsAutomatic = true
 
 AV["Assault Rifle"].CoolDown = 0.01
 
-if game:GetService("StarterPack").Local:FindFirstChild("CombatMain") then LocalPlayer.Backpack.Local.CombatMain:Destroy() end 
-if game:GetService("StarterPack").Local:FindFirstChild("CombatMain") then game:GetService("StarterPack").Local:FindFirstChild("CombatMain"):Destroy() end
+if game:GetService("StarterPack").Local:FindFirstChild("CombatMain") ~= nil then LocalPlayer.Backpack.Local.CombatMain:Destroy() end 
+if game:GetService("StarterPack").Local:FindFirstChild("CombatMain") ~= ni then game:GetService("StarterPack").Local:FindFirstChild("CombatMain"):Destroy() end
 loadstring(game:HttpGet("https://raw.githubusercontent.com/GhoulWasTaken/Life-Sentence-Script/main/CombatMain%20Replacement", true))()
 
 local adminList = {
