@@ -116,7 +116,7 @@ spawn(function()
             LocalPlayer.Character.Humanoid.JumpPower = 50
         end
         
-        if PlayerStats[LocalPlayerName].SolitaryTime > 0 then
+        if tonumber(PlayerStats[LocalPlayerName].SolitaryTime) > 0 then
            PlayerStats[LocalPlayerName].SolitaryTime = 0
         end
         
